@@ -39,8 +39,33 @@ class BpfbBinder {
 			$processed++;
 			if (BPFB_IMAGE_LIMIT && $processed > BPFB_IMAGE_LIMIT) break; // Do not even bother to process more.
 			if (preg_match('!^https?:\/\/!i', $img)) { // Just add remote images
-				$ret[] = $img;
-				continue;
+				$pfx = $bp->loggedin_user->id . '_' . preg_replace('/ /', '', microtime());
+				$image_to_load = file_get_contents($img);
+				$ext = pathinfo($img, PATHINFO_EXTENSION);
+				$new_img = BPFB_BASE_IMAGE_DIR . "{$pfx}_".uniqid().'.'.$ext;
+				if(file_put_contents($new_img, $image_to_load)) {
+
+					if (function_exists('wp_get_image_editor')) { // New way of resizing the image
+						$image = wp_get_image_editor($new_img);
+						if (!is_wp_error($image)) {
+							$thumb_filename  = $image->generate_filename('bpfbt');
+							$image->resize($thumb_w, $thumb_h, false);
+							$image->save($thumb_filename);
+						}
+					} else { // Old school fallback
+						image_resize($new_img, $thumb_w, $thumb_h, false, 'bpfbt');
+					}
+
+					// $ret[] = ;
+					$ret[] = pathinfo($new_img, PATHINFO_BASENAME);
+					// $ret[] = $img;
+					continue;
+				}
+				else return false;
+				
+				
+				
+				
 			}
 			
 			$pfx = $bp->loggedin_user->id . '_' . preg_replace('/[^0-9]/', '-', microtime());
