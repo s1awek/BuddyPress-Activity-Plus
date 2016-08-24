@@ -2,6 +2,7 @@
 /*
 Plugin Name: BuddyPress Activity Plus
 Plugin URI: http://premium.wpmudev.org/project/media-embeds-for-buddypress-activity
+Text Domain: bpfb
 Description: A Facebook-style media sharing improvement for the activity box.
 Version: 1.6
 Author: WPMU DEV
